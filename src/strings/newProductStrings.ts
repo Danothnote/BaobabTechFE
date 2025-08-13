@@ -1,9 +1,9 @@
 import type { FormStrings } from "../types/formTypes";
-import { API_BASE_URL } from "./env";
+import { API_BASE_URL, background, WALLPAPER } from "./env";
 
 export const newProductStrings: FormStrings = {
   title: "Publica tu departamento",
-  imageUrl: `${API_BASE_URL}/static/images/wallpapers/newProduct.webp`,
+  imageUrl: `${API_BASE_URL}${WALLPAPER}${background.newProduct}`,
   inputs: [
     {
       label: "Categoría",

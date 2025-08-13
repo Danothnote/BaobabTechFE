@@ -21,11 +21,6 @@ export interface ProductData {
   panel_type?: string;
 }
 
-export interface ProductResponse {
-  message: string;
-  data: ProductData | ProductData[];
-}
-
 interface SearchBar {
   placeholder: string;
   icon: string;

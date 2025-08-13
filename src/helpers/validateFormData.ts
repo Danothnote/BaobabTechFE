@@ -80,21 +80,13 @@ export const validateFormData = (
     if (input.type === "date") {
       const dateValue = value as Date | null;
       if (!isEmpty && dateValue) {
-        if (
-          input.min &&
-          input.min instanceof Date &&
-          dateValue < input.min
-        ) {
+        if (input.min && input.min instanceof Date && dateValue < input.min) {
           if (!newErrors[input.id as string])
             newErrors[input.id as string] = [];
           newErrors[input.id as string].push(input.validation!);
           hasEmptyOrInvalidFields = true;
         }
-        if (
-          input.max &&
-          input.max instanceof Date &&
-          dateValue > input.max
-        ) {
+        if (input.max && input.max instanceof Date && dateValue > input.max) {
           if (!newErrors[input.id as string])
             newErrors[input.id as string] = [];
           newErrors[input.id as string].push(input.validation!);

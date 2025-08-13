@@ -1,10 +1,10 @@
 import type { NavbarStrings } from "../types/navbarTypes";
-import { API_BASE_URL } from "./env";
+import { API_BASE_URL, LOGO, logoNavbar } from "./env";
 
 
 export const navbarStrings: NavbarStrings = {
   logo: {
-    src: `${API_BASE_URL}/static/images/logo/logo_one_line.webp`,
+    src: `${API_BASE_URL}${LOGO}${logoNavbar}`,
     alt: "logo",
   },
   avatar: {

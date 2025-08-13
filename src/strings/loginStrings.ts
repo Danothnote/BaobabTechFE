@@ -1,9 +1,9 @@
 import type { FormStrings } from "../types/formTypes";
-import { API_BASE_URL } from "./env";
+import { API_BASE_URL, WALLPAPER, background } from "./env";
 
 export const loginStrings: FormStrings = {
   title: "Inicio de Sesión",
-  imageUrl: `${API_BASE_URL}/static/images/wallpapers/login.webp`,
+  imageUrl: `${API_BASE_URL}${WALLPAPER}${background.login}`,
   inputs: [
     {
       id: "email",

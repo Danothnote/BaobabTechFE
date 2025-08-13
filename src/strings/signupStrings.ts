@@ -1,10 +1,10 @@
 import { substractYears } from "../helpers/substractYears";
 import type { FormStrings } from "../types/formTypes";
-import { API_BASE_URL } from "./env";
+import { API_BASE_URL, background, WALLPAPER } from "./env";
 
 export const signupStrings: FormStrings = {
   title: "Registro de Usuario",
-  imageUrl: `${API_BASE_URL}/static/images/wallpapers/signup.webp`,
+  imageUrl: `${API_BASE_URL}${WALLPAPER}${background.signup}`,
   inputs: [
     {
       id: "firstname",

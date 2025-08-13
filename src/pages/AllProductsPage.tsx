@@ -9,25 +9,37 @@ import { useAuth } from "../hooks/useAuth";
 import type { DataTableFilterMeta } from "primereact/datatable";
 import { useEffect, useState } from "react";
 import type { ProductData } from "../types/productTypes";
-import { useAllProducts } from "../hooks/useAllProducts";
 import { allProductsStrings } from "../strings/allProductsStrings";
+import { useGetData } from "../hooks/useGetData";
+import { useUpdateFavorite } from "../hooks/useUpdateFavorite";
+import { mutate } from "swr";
+import { API_BASE_URL } from "../strings/env";
 
 export const AllProductsPage = () => {
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [filteredProducts, setFilteredProducts] = useState<ProductData[]>([]);
   const [globalFilterValue, setGlobalFilterValue] = useState<string>("");
   const [filters, setFilters] = useState<DataTableFilterMeta>({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    favorite: { value: null, matchMode: FilterMatchMode.EQUALS },
-    product_name: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    price: { value: [0, 500], matchMode: FilterMatchMode.BETWEEN },
   });
-  const { allProducts, loading } = useAllProducts();
-  const { user, isAuthenticated, updateUser } = useAuth();
+  // const { data: products, isLoading: isLoadingProducts } =
+  //   useGetData<ProductData[]>("products/");
+  const { data: products, isLoading } = useGetData<
+    ProductData[]
+  >(
+    selectedCategory
+      ? `products/by_filter/?category=${selectedCategory}`
+      : "products/"
+  );
+  const { data: favorites } = useGetData<string[]>("favorites/");
+  const { addFavorite, removeFavorite } =
+    useUpdateFavorite("favorites/update/");
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (allProducts) {
-      let _filteredProducts = [...allProducts];
+    if (products) {
+      let _filteredProducts = [...products];
 
       const globalFilterValue = (
         filters.global as { value: string | null; matchMode: FilterMatchMode }
@@ -43,21 +55,9 @@ export const AllProductsPage = () => {
         );
       }
 
-      const favoriteFilterValue = (
-        filters.favorite as { value: string | null; matchMode: FilterMatchMode }
-      ).value;
-      if (favoriteFilterValue !== null) {
-        _filteredProducts = _filteredProducts.filter((product) => {
-          const isFavorite = (user?.favorite_products ?? []).includes(
-            product._id
-          );
-          return favoriteFilterValue ? isFavorite : !isFavorite;
-        });
-      }
-
       setFilteredProducts(_filteredProducts);
     }
-  }, [allProducts, filters, user]);
+  }, [products, filters]);
 
   const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -91,25 +91,16 @@ export const AllProductsPage = () => {
   };
 
   const toggleFavorite = async (product_id: string, isFavorite: boolean) => {
-    let newFavorites: string[];
     if (isFavorite) {
-      newFavorites = (user?.favorite_products ?? []).filter(
-        (id) => id !== product_id
-      );
+      await removeFavorite(product_id, "remove");
     } else {
-      newFavorites = [...(user?.favorite_products || []), product_id];
+      await addFavorite(product_id, "add");
     }
-
-    try {
-      await updateUser({ favorite_flats: newFavorites });
-    } catch (error: any) {
-      console.log(`Error: ${error.message}`);
-    }
+    mutate(`${API_BASE_URL}/favorites/`);
   };
 
   const favoriteTemplate = (product: ProductData) => {
-    const isFavorite = (user?.favorite_products ?? []).includes(product._id);
-    // product.favorite = isFavorite;
+    const isFavorite = favorites!.includes(product._id);
     return (
       <div
         className="h-auto flex justify-content-center align-items-center absolute top-0 right-0 m-3 z-1"
@@ -159,15 +150,13 @@ export const AllProductsPage = () => {
           <div className="flex flex-column gap-3 py-2">
             <div className="flex justify-content-center align-items-center pb-5">
               <div className="w-min flex gap-5 relative">
-                {user && favoriteTemplate(product)}
+                {isAuthenticated && favoriteTemplate(product)}
                 <Image
                   className="shadow-2 border-round-lg overflow-hidden z-0"
                   imageClassName="h-15rem w-20rem"
                   imageStyle={{ objectFit: "cover" }}
                   src={product.image_url[0]}
                   alt="image"
-                  preview
-                  onClick={(e) => e.stopPropagation()}
                 />
               </div>
             </div>
@@ -187,69 +176,24 @@ export const AllProductsPage = () => {
                 <span className="font-bold">Modelo: </span>
                 <span>{product.model}</span>
               </div>
-              {product.cpu && (
-                <div>
-                  <span className="font-bold">Procesador: </span>
-                  <span>{product.cpu}</span>
-                </div>
-              )}
-              {product.gpu && (
-                <div>
-                  <span className="font-bold">Tarjeta de vídeo: </span>
-                  <span>{product.gpu}</span>
-                </div>
-              )}
-              {product.ram && (
-                <div>
-                  <span className="font-bold">Memoria RAM: </span>
-                  <span>{product.ram} GB</span>
-                </div>
-              )}
-              {product.storage_type && (
-                <div>
-                  <span className="font-bold">Tipo de Almacenamiento: </span>
-                  <span>{product.storage_type}</span>
-                </div>
-              )}
-              {product.storage && (
-                <div>
-                  <span className="font-bold">Almacenamiento: </span>
-                  <span>{product.storage} GB</span>
-                </div>
-              )}
-              {product.battery && (
-                <div>
-                  <span className="font-bold">Batería: </span>
-                  <span>{product.cpu} mAh</span>
-                </div>
-              )}
-              {product.display_size && (
-                <div>
-                  <span className="font-bold">Tamaño de pantalla: </span>
-                  <span>{product.display_size}</span>
-                </div>
-              )}
-              {product.display_resolution && (
-                <div>
-                  <span className="font-bold">Resolución: </span>
-                  <span>{product.display_resolution}</span>
-                </div>
-              )}
-              {product.panel_type && (
-                <div>
-                  <span className="font-bold">Tipo de panel: </span>
-                  <span>{product.panel_type}</span>
-                </div>
-              )}
               <div>
                 <span className="font-bold">En stock: </span>
-                <span>
-                  {product.quantity > 0 ? "Disponible" : "No Disponible"}
+                <span
+                  style={{
+                    color: `${
+                      product.quantity > 0 ? "greenyellow" : "orangered"
+                    }`,
+                  }}
+                >
+                  {product.quantity > 0 ? "Disponible" : "Sin Stock"}
                 </span>
               </div>
             </div>
           </div>
-          <div className="pt-3 text-center align-content-end h-full">
+          <div
+            className="pt-3 text-center align-content-end h-full"
+            style={{ color: "greenyellow" }}
+          >
             <span className="text-2xl font-semibold">${product.price}</span>
           </div>
         </div>
@@ -263,7 +207,7 @@ export const AllProductsPage = () => {
       listTemplate={listTemplate}
       header={renderHeader()}
       emptyMessage={allProductsStrings.emptyLabel}
-      loading={loading}
+      loading={isLoading}
       className="border-round-lg overflow-hidden my-5"
     />
   );

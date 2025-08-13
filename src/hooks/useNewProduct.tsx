@@ -3,10 +3,10 @@ import type { ClientFormData } from "../types/formTypes";
 import { useState } from "react";
 import axios from "axios";
 import type { AuthResponse } from "../types/authTypes";
+import { API_BASE_URL } from "../strings/env";
 
 export const useNewProduct = () => {
   const [loading, setLoading] = useState<boolean>(false);
-  const API_BASE_URL = "http://localhost:8000";
   axios.defaults.withCredentials = true;
 
   const newProduct = async (

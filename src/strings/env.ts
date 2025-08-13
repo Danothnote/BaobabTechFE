@@ -1,1 +1,12 @@
 export const API_BASE_URL = import.meta.env.VITE_API_URL;
+export const WALLPAPER = "/static/images/wallpapers/";
+export const LOGO = "/static/images/logo/";
+export const logoNavbar = "logo_one_line.webp";
+export const background = {
+  login: "login.webp",
+  signup: "signup.webp",
+  profile: "profile.webp",
+  newProduct: "newProduct.webp",
+  userView: "user.webp",
+  productView: "product.webp",
+};

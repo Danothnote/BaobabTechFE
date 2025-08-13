@@ -10,6 +10,7 @@ import { Sidebar } from "primereact/sidebar";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { navbarStrings } from "../strings/navbarStrings";
 import type { MenuLink } from "../types/navbarTypes";
+import { Divider } from "primereact/divider";
 
 export const NavbarComponent = () => {
   const [sidebarVisible, setSidebarVisible] = useState(false);
@@ -156,7 +157,7 @@ export const NavbarComponent = () => {
 
         {isAuthenticated && (
           <>
-            <hr className="m-3" />
+            <Divider />
             <h2 className="pl-3">Perfil</h2>
             {navbarStrings.profileMenu.map((item: MenuLink) => {
               if (
