@@ -7,39 +7,93 @@ import { InputIcon } from "primereact/inputicon";
 import { useNavigate } from "react-router";
 import { useAuth } from "../hooks/useAuth";
 import type { DataTableFilterMeta } from "primereact/datatable";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { ProductData } from "../types/productTypes";
 import { allProductsStrings } from "../strings/allProductsStrings";
 import { useGetData } from "../hooks/useGetData";
 import { useUpdateFavorite } from "../hooks/useUpdateFavorite";
 import { mutate } from "swr";
 import { API_BASE_URL } from "../strings/env";
+import { Slider } from "primereact/slider";
+import type { CategoriesData } from "../types/fetchTypes";
+import { PanelMenu } from "primereact/panelmenu";
+import { Divider } from "primereact/divider";
+import { usePostData } from "../hooks/usePostData";
+import { Button } from "primereact/button";
+import { Sidebar } from "primereact/sidebar";
 
 export const AllProductsPage = () => {
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [visible, setVisible] = useState<boolean>(false);
+  const [isCategoryFiltered, setIsCategoryFiltered] = useState<boolean>(false);
+  const [maxPrice, setMaxPrice] = useState<number>(1000);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
+  const [debouncedPriceRange, setDebouncedPriceRange] = useState<
+    [number, number]
+  >([0, 1000]);
   const [filteredProducts, setFilteredProducts] = useState<ProductData[]>([]);
   const [globalFilterValue, setGlobalFilterValue] = useState<string>("");
   const [filters, setFilters] = useState<DataTableFilterMeta>({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
   });
-  // const { data: products, isLoading: isLoadingProducts } =
-  //   useGetData<ProductData[]>("products/");
-  const { data: products, isLoading } = useGetData<
-    ProductData[]
-  >(
-    selectedCategory
-      ? `products/by_filter/?category=${selectedCategory}`
-      : "products/"
-  );
+  const { data: products, isLoading } = useGetData<ProductData[]>("products/");
+  const {
+    trigger: postProductsByCategory,
+    data: postedData,
+    isLoading: isPosting,
+  } = usePostData<ProductData[]>("products/by_filter/");
+  const { data: categories, isLoading: isLoadingCategories } =
+    useGetData<CategoriesData[]>("categories/");
   const { data: favorites } = useGetData<string[]>("favorites/");
   const { addFavorite, removeFavorite } =
     useUpdateFavorite("favorites/update/");
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
+  const menuItems = useMemo(() => {
+    if (!categories) return [];
+    return categories.map((category) => ({
+      label: category.name,
+      items: category.subcategories.map((subCategorie) => ({
+        label: subCategorie.name,
+        command: () => {
+          postProductsByCategory({ category: subCategorie.name });
+          setIsCategoryFiltered(true);
+        },
+      })),
+    }));
+  }, [categories, postProductsByCategory]);
+
   useEffect(() => {
-    if (products) {
-      let _filteredProducts = [...products];
+    const handler = setTimeout(() => {
+      setDebouncedPriceRange(priceRange);
+    }, 300);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [priceRange]);
+
+  useEffect(() => {
+    if (products && products.length > 0) {
+      const highestPrice = Math.max(
+        ...products.map((product) => product.price)
+      );
+      const roundedMaxPrice = Math.ceil(highestPrice);
+      setMaxPrice(roundedMaxPrice);
+      setPriceRange([0, roundedMaxPrice]);
+    }
+  }, [products]);
+
+  useEffect(() => {
+    const sourceProducts = postedData || products || [];
+    if (sourceProducts) {
+      let _filteredProducts = [...sourceProducts];
+
+      _filteredProducts = _filteredProducts.filter(
+        (product) =>
+          product.price >= debouncedPriceRange[0] &&
+          product.price <= debouncedPriceRange[1]
+      );
 
       const globalFilterValue = (
         filters.global as { value: string | null; matchMode: FilterMatchMode }
@@ -57,7 +111,12 @@ export const AllProductsPage = () => {
 
       setFilteredProducts(_filteredProducts);
     }
-  }, [products, filters]);
+  }, [products, filters, debouncedPriceRange, postedData]);
+
+  const clearCategoryFilter = () => {
+    setIsCategoryFiltered(false);
+    setFilteredProducts(products || []);
+  };
 
   const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -72,16 +131,44 @@ export const AllProductsPage = () => {
 
   const renderHeader = () => {
     return (
-      <div className="flex gap-5 justify-content-between align-items-center px-3">
-        <IconField iconPosition="left">
-          <InputIcon className="pi pi-search" />
-          <InputText
-            className="w-20rem"
-            value={globalFilterValue}
-            onChange={onGlobalFilterChange}
-            placeholder={allProductsStrings.searchBar.placeholder}
+      <div className="flex flex-wrap gap-5 justify-content-between align-items-center px-3 my-3">
+        <div className="flex gap-3">
+          <Button
+            icon="pi pi-book"
+            className="mr-2 block md:hidden"
+            onClick={() => setVisible(true)}
           />
-        </IconField>
+          <IconField iconPosition="left">
+            <InputIcon className="pi pi-search" />
+            <InputText
+              className="w-20rem"
+              value={globalFilterValue}
+              onChange={onGlobalFilterChange}
+              placeholder={allProductsStrings.searchBar.placeholder}
+            />
+          </IconField>
+          {isCategoryFiltered && (
+            <Button
+              icon="pi pi-filter-slash"
+              onClick={clearCategoryFilter}
+              severity="warning"
+            >
+              <span className="hidden md:inline font-bold ml-2">
+                Eliminar Categoría
+              </span>
+            </Button>
+          )}
+        </div>
+        <div className="w-20rem">
+          <div className="text-white mb-2">{`Rango de precios: $${priceRange[0]} - $${priceRange[1]}`}</div>
+          <Slider
+            value={priceRange}
+            onChange={(e) => setPriceRange(e.value as [number, number])}
+            range
+            min={0}
+            max={maxPrice}
+          />
+        </div>
       </div>
     );
   };
@@ -126,7 +213,7 @@ export const AllProductsPage = () => {
     if (!items || items.length === 0) return null;
 
     return (
-      <div className="grid grid-nogutter gap-5 mx-4 my-5">
+      <div className="grid grid-nogutter gap-5 mx-4 mb-5">
         {items.map((product) => {
           return itemDataTemplate(product);
         })}
@@ -202,13 +289,42 @@ export const AllProductsPage = () => {
   };
 
   return (
-    <DataView
-      value={filteredProducts}
-      listTemplate={listTemplate}
-      header={renderHeader()}
-      emptyMessage={allProductsStrings.emptyLabel}
-      loading={isLoading}
-      className="border-round-lg overflow-hidden my-5"
-    />
+    <div>
+      {renderHeader()}
+      <Divider />
+      <div className="flex">
+        <div className="w-20rem mr-5 ml-3 hidden md:block">
+          {isLoadingCategories ? (
+            <p>Cargando categorías...</p>
+          ) : (
+            <div>
+              <h2>Categorías</h2>
+              <PanelMenu model={menuItems} className="w-full" />
+            </div>
+          )}
+        </div>
+        <Sidebar visible={visible} onHide={() => setVisible(false)}>
+          {isLoadingCategories ? (
+            <p>Cargando categorías...</p>
+          ) : (
+            <div>
+              <h2>Categorías</h2>
+              <PanelMenu model={menuItems} className="w-full" />
+            </div>
+          )}
+        </Sidebar>
+        <div className="flex-1">
+          <DataView
+            value={filteredProducts}
+            listTemplate={listTemplate}
+            emptyMessage={allProductsStrings.emptyLabel}
+            loading={isLoading || isPosting}
+            paginator
+            rows={15}
+            className="border-round-lg overflow-hidden my-3 products-data-view"
+          />
+        </div>
+      </div>
+    </div>
   );
 };

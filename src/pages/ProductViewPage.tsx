@@ -102,7 +102,7 @@ export const ProductViewPage = () => {
                           key as keyof typeof productViewStrings.productLabels &
                             keyof ProductData;
 
-                        if (product[dataKey]) {
+                        if (product[dataKey] !== undefined) {
                           return (
                             <div
                               key={dataKey}

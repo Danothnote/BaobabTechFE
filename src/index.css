@@ -17,7 +17,18 @@ body {
   justify-content: center;
 }
 
-.p-dataview-content,
-.p-dataview-header {
-  background-color: #121212;
+.products-data-view .p-dataview-content,
+.products-data-view .p-dataview-header {
+  background: none;
+}
+
+.products-data-view .p-paginator {
+  background: none;
+  border: none;
+}
+
+.products-data-view .p-dataview-emptymessage {
+  text-align: center;
+  font-weight: bold;
+  font-size: larger;
 }
