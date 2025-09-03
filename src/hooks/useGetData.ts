@@ -1,18 +1,22 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import useSWR from "swr";
 import { API_BASE_URL } from "../strings/env";
-import type { FetchDataGet } from "../types/fetchTypes";
 
 const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 
-export const useGetData = <T>(route: string) => {
-  const { data, error, isLoading } = useSWR<FetchDataGet<T>>(
+export const useGetData = <T>(route: string | null) => {
+  const { data, error, isLoading, mutate } = useSWR<T | null>(
     `${API_BASE_URL}/${route}`,
-    fetcher
+    fetcher,
+    {
+      shouldRetryOnError: (error: AxiosError) => {
+        if (error.response?.status === 401 || error.response?.status === 404) {
+          return false;
+        }
+        return true;
+      },
+    }
   );
 
-  const dataMessage =  data?.message;
-  const dataFetched = data?.data;
-
-  return { data: dataFetched, message: dataMessage, isError: error, isLoading };
+  return { data, error, isLoading, mutate };
 };

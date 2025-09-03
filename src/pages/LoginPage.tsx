@@ -11,6 +11,7 @@ import { createInitialFormState } from "../helpers/createInitialFormState";
 import { validateFormData } from "../helpers/validateFormData";
 import { showToast } from "../helpers/showToast";
 import { useFormLayout } from "../hooks/useFormLayout";
+import type { FileUpload } from "primereact/fileupload";
 
 export const LoginPage = () => {
   const initialFormState = useMemo(() => {
@@ -30,7 +31,8 @@ export const LoginPage = () => {
   useEffect(() => {
     const { errors: newErrors, isValid: overallIsValid } = validateFormData(
       formData,
-      loginStrings.inputs
+      loginStrings.inputs,
+      {}
     );
 
     setErrors(newErrors);
@@ -84,12 +86,18 @@ export const LoginPage = () => {
     console.log("Reset Password");
   };
 
+  const fileUploadRef = useRef<FileUpload>(null);
+  const handleOptionalFieldChange = (id: string, isChecked: boolean) => {};
+
   const formLayout = useFormLayout({
     inputs: loginStrings.inputs,
     formData: formData,
     errors: errors,
     handleChange: handleChange,
     touchedFields: touchedFields,
+    optionalFieldsEnabled: {},
+    fileUploadRef: fileUploadRef,
+    handleOptionalFieldChange: handleOptionalFieldChange,
   });
 
   return (

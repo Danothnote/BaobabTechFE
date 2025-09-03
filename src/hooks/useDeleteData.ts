@@ -3,24 +3,24 @@ import useSWRMutation from "swr/mutation";
 import { API_BASE_URL } from "../strings/env";
 import type { FetchDataGet } from "../types/fetchTypes";
 
-const poster = async (url: string, { arg = {} }: { arg?: object }) => {
-  return axios.post(url, arg).then((res) => res.data);
+const deleter = async (url: string, { arg }: { arg: string }) => {
+  return axios.delete(`${url}${arg}`).then((res) => res.data);
 };
 
-export const usePostData = <T>(route: string) => {
+export const useDeleteData = <T>(route: string) => {
   const { trigger, data, error, isMutating } = useSWRMutation<
     FetchDataGet<T>,
     Error,
     string,
-    object | undefined
-  >(`${API_BASE_URL}/${route}`, poster);
+    string
+  >(`${API_BASE_URL}/${route}`, deleter);
 
   const dataMessage = data?.message;
-  const dataPosted = data?.data;
+  const dataDeleted = data?.data;
 
   return {
     trigger,
-    data: dataPosted,
+    data: dataDeleted,
     message: dataMessage,
     isError: error,
     isLoading: isMutating,

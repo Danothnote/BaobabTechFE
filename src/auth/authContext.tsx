@@ -1,39 +1,49 @@
 import { createContext, useEffect, useState } from "react";
 import type { NavigateFunction } from "react-router";
 import axios from "axios";
-import type { AuthContextType, AuthProviderProps, AuthResponse, AuthUser, UpdateResponse } from "../types/authTypes";
+import type {
+  AuthContextType,
+  AuthProviderProps,
+  AuthResponse,
+  AuthUser,
+} from "../types/authTypes";
 import type { ClientFormData } from "../types/formTypes";
+import { API_BASE_URL } from "../strings/env";
+import { useUpdateData } from "../hooks/useUpdateData";
+import { useGetData } from "../hooks/useGetData";
 
 export const AuthContext = createContext<AuthContextType | undefined>(
   undefined
 );
-const API_BASE_URL = "http://localhost:8000";
+
 axios.defaults.withCredentials = true;
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [loading, setLoading] = useState(true);
-
-  const checkAuthStatus = async () => {
-    try {
-      const response = await axios.get<AuthUser>(`${API_BASE_URL}/auth/me`);
-      if (response.data) {
-        setUser(response.data);
-        setIsAuthenticated(true);
-      }
-    } catch (error) {
-      console.error("Error al comprobar el estado de autenticación:", error);
-      setUser(null);
-      setIsAuthenticated(false);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const {
+    data: userData,
+    error,
+    isLoading: isSWRLoading,
+    mutate,
+  } = useGetData<AuthUser>("auth/me");
+  const { trigger: updateUserFilesTrigger, message: updateFilesMessage } =
+    useUpdateData("auth/me/files");
+  const { trigger: updateUserDataTrigger, message: updateDataMessage } =
+    useUpdateData("auth/me/data");
 
   useEffect(() => {
-    checkAuthStatus();
-  }, []);
+    if (userData) {
+      setUser(userData);
+      setIsAuthenticated(true);
+      setLoading(false);
+    } else if (error) {
+      setUser(null);
+      setIsAuthenticated(false);
+      setLoading(false);
+    }
+  }, [userData, error]);
 
   const login = async (
     userData: ClientFormData,
@@ -105,42 +115,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const updateUser = async (updateData: {
-    [key: string]: string | string[] | null | undefined;
+  const updateFilesUser = async (updateData: {
+    [key: string]: string | string[] | FormData | Date | null | undefined;
   }) => {
-    setLoading(true);
-    try {
-      const response = await axios.patch<UpdateResponse>(
-        `${API_BASE_URL}/auth/me`,
-        updateData
-      );
+    await updateUserFilesTrigger({ dataToPatch: updateData.data });
+    return updateFilesMessage;
+  };
 
-      if (response.status === 200) {
-        if (response.data.user) {
-          setUser(response.data.user);
-        }
-        setLoading(false);
-        return response.data.message;
-      }
-      setLoading(false);
-      return response.data.message;
-    } catch (error) {
-      setLoading(false);
-      if (axios.isAxiosError(error)) {
-        console.error(
-          "Error al actualizar usuario:",
-          error.response?.data || error.message
-        );
-        throw new Error(
-          error.response?.data?.detail || "Error al actualizar usuario"
-        );
-      } else {
-        console.error("Error inesperado:", error);
-        throw new Error(
-          "Ha ocurrido un error inesperado al actualizar el usuario"
-        );
-      }
-    }
+  const updateDataUser = async (updateData: {
+    [key: string]: string | string[] | FormData | Date | null | undefined;
+  }) => {
+    await updateUserDataTrigger({ dataToPatch: updateData });
+    return updateFilesMessage;
   };
 
   const logout = async () => {
@@ -149,8 +135,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       await axios.post(`${API_BASE_URL}/auth/logout`);
       setUser(null);
       setIsAuthenticated(false);
+      await mutate(null, { revalidate: false });
     } catch (error) {
       console.error("Logout failed:", error);
+      setUser(null);
+      setIsAuthenticated(false);
+      await mutate(null, { revalidate: false });
     } finally {
       setLoading(false);
     }
@@ -161,11 +151,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       value={{
         user,
         isAuthenticated,
+        loading: loading || isSWRLoading,
+        updateUserFilesTrigger,
+        updateFilesMessage,
+        updateUserDataTrigger,
+        updateDataMessage,
+        refreshUser: mutate,
         login,
         signup,
-        updateUser,
+        updateFilesUser,
+        updateDataUser,
         logout,
-        loading,
       }}
     >
       {children}

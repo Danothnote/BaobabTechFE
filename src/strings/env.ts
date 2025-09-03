@@ -9,4 +9,5 @@ export const background = {
   newProduct: "newProduct.webp",
   userView: "user.webp",
   productView: "product.webp",
+  cart: "cart.webp",
 };

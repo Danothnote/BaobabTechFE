@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router";
 import { useAuth } from "../hooks/useAuth";
 import { Menu } from "primereact/menu";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Avatar } from "primereact/avatar";
 import { Button } from "primereact/button";
 import type { MenuItem } from "primereact/menuitem";
@@ -11,13 +11,26 @@ import { ProgressSpinner } from "primereact/progressspinner";
 import { navbarStrings } from "../strings/navbarStrings";
 import type { MenuLink } from "../types/navbarTypes";
 import { Divider } from "primereact/divider";
+import { Badge } from "primereact/badge";
+import { useGetData } from "../hooks/useGetData";
+import type { CartItem } from "../types/productTypes";
 
 export const NavbarComponent = () => {
   const [sidebarVisible, setSidebarVisible] = useState(false);
+  const [cartBadge, setCartBadge] = useState(0);
   const { isAuthenticated, user, logout, loading } = useAuth();
+  const { data: cartData } = useGetData<{ message: String; data: CartItem[] }>(
+    isAuthenticated ? "cart/" : null
+  );
   const navigate = useNavigate();
   const menu = useRef<Menu>(null);
   const toast = useRef<Toast>(null);
+
+  useEffect(() => {
+    if (cartData) {
+      setCartBadge(cartData.data.length);
+    }
+  }, [cartData]);
 
   const scrollToFooter = () => {
     const footerElement = document.getElementById(navbarStrings.pages[2].id);
@@ -32,15 +45,17 @@ export const NavbarComponent = () => {
       if (item.id === navbarStrings.profileMenu[3].id) {
         profileMenuItems.push({ separator: true });
       }
+
       if (
         (user?.role === "admin" || item.id !== "allUsersLink") &&
-        (user?.role === "user" || item.id !== "myProductsLink")
+        (user?.role === "merchant" || item.id !== "myProductsLink") &&
+        (user?.role === "merchant" || item.id !== "newProductLink")
       ) {
         profileMenuItems.push({
           label: item.label,
           icon: item.icon,
           command:
-            item.id === navbarStrings.profileMenu[3].id
+            item.id === "logout"
               ? async () => {
                   await logout();
                   navigate(item.page);
@@ -48,7 +63,6 @@ export const NavbarComponent = () => {
                     severity: "success",
                     summary: "Completo",
                     detail: "Cierre de sesión exitoso!",
-                    life: 3000,
                   });
                 }
               : () => navigate(item.page),
@@ -103,21 +117,43 @@ export const NavbarComponent = () => {
               animationDuration=".7s"
             />
           ) : isAuthenticated ? (
-            <div
-              onClick={(event) => menu.current?.toggle(event)}
-              className="flex align-items-center gap-3 cursor-pointer"
-            >
-              <span className="text-white hidden sm:inline">
-                {navbarStrings.greetings.label} {user?.firstname}
-              </span>
-              <Avatar
-                icon="pi pi-user"
-                image={user?.profile_picture}
-                shape="circle"
-                className="cursor-pointer"
-                aria-haspopup
-              />
-              <Menu model={fillProfileMenuItems()} popup ref={menu} />
+            <div className="flex align-items-center w-max">
+              <div
+                onClick={(event) => menu.current?.toggle(event)}
+                className="flex align-items-center gap-3 cursor-pointer"
+              >
+                <span className="text-white hidden sm:inline">
+                  {navbarStrings.greetings.label} {user?.firstname}
+                </span>
+                <Avatar
+                  icon="pi pi-user"
+                  image={user?.profile_picture}
+                  shape="circle"
+                  className="cursor-pointer custom-avatar"
+                  aria-haspopup
+                />
+                <Menu model={fillProfileMenuItems()} popup ref={menu} />
+              </div>
+
+              <div
+                className="relative cursor-pointer"
+                onClick={() => navigate("/cart")}
+              >
+                <Button
+                  icon="pi pi-shopping-cart"
+                  rounded
+                  aria-label="Carrito de compras"
+                  className="w-2rem h-2rem ml-3"
+                />
+                {isAuthenticated && cartBadge > 0 && (
+                  <Badge
+                    className="absolute"
+                    style={{ bottom: "-5px", right: "-9px" }}
+                    value={cartBadge}
+                    severity={"danger"}
+                  />
+                )}
+              </div>
             </div>
           ) : (
             <Button
@@ -162,7 +198,8 @@ export const NavbarComponent = () => {
             {navbarStrings.profileMenu.map((item: MenuLink) => {
               if (
                 (user?.role === "admin" || item.id !== "allUsersLink") &&
-                (user?.role === "user" || item.id !== "myProductsLink")
+                (user?.role === "merchant" || item.id !== "myProductsLink") &&
+                (user?.role === "merchant" || item.id !== "newProductLink")
               ) {
                 return (
                   <Button

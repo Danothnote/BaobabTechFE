@@ -16,7 +16,15 @@ export interface FormToast {
 
 export interface FormInput {
   id: string;
-  type: "text" | "textarea" | "email" | "password" | "number" | "date" | "file" | "select";
+  type:
+    | "text"
+    | "textarea"
+    | "email"
+    | "password"
+    | "number"
+    | "date"
+    | "file"
+    | "select";
   label?: string;
   uploadButtonLabel?: string;
   placeholder?: string;
@@ -24,6 +32,7 @@ export interface FormInput {
   options?: string[];
   min?: Date | number;
   max?: Date | number;
+  optional?: boolean;
 }
 
 export interface FormStrings {
@@ -47,6 +56,8 @@ export interface CreateInputsProps {
   ) => void;
   isTouched?: boolean;
   fileUploadRef?: React.RefObject<FileUpload>;
+  optionalFieldsEnabled: Record<string, boolean>;
+  handleOptionalFieldChange: (id: string, isChecked: boolean) => void;
 }
 
 export interface UseFormLayoutProps {
@@ -56,5 +67,7 @@ export interface UseFormLayoutProps {
   handleChange: CreateInputsProps["handleChange"];
   touchedFields: Record<string, boolean>;
   threshold?: number;
-  fileUploadRef?: React.RefObject<FileUpload>;
+  fileUploadRef: React.RefObject<FileUpload>;
+  optionalFieldsEnabled: Record<string, boolean>;
+  handleOptionalFieldChange: (id: string, isChecked: boolean) => void;
 }

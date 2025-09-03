@@ -1,8 +1,8 @@
 import { PrimeReactProvider } from "primereact/api";
 import "/node_modules/primeflex/primeflex.css";
-import 'primereact/resources/themes/lara-dark-cyan/theme.css';
+import "primereact/resources/themes/lara-dark-cyan/theme.css";
 import "primeicons/primeicons.css";
-import { Route, Routes } from "react-router"
+import { Route, Routes } from "react-router";
 import { HomePage } from "./pages/HomePage";
 import { LoginPage } from "./pages/LoginPage";
 import { SignupPage } from "./pages/SignupPage";
@@ -16,6 +16,13 @@ import { UserViewPage } from "./pages/UserViewPage";
 import { NavbarComponent } from "./components/NavbarComponent";
 import { FooterComponent } from "./components/FooterComponent";
 import { AuthProvider } from "./auth/authContext";
+import { CartPage } from "./pages/CartPage";
+import {
+  AdminRoute,
+  MerchantRoute,
+  PrivateRoute,
+  PublicRoute,
+} from "./router/PrivateRoute";
 
 export const App = () => {
   return (
@@ -24,18 +31,31 @@ export const App = () => {
         <NavbarComponent />
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignupPage />} />
-          <Route path="/profile" element={<UserProfilePage />} />
           <Route path="/allProducts" element={<AllProductsPage />} />
-          <Route path="/myProducts" element={<MyProductsPage />} />
-          <Route path="/newProduct" element={<NewProductPage />} />
           <Route path="/products/:product_id" element={<ProductViewPage />} />
-          <Route path="/allUsers" element={<AllUsersPage />} />
-          <Route path="/{user_id}" element={<UserViewPage />} />
+
+          <Route element={<PublicRoute />}>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
+          </Route>
+
+          <Route element={<PrivateRoute />}>
+            <Route path="/profile" element={<UserProfilePage />} />
+            <Route path="/cart" element={<CartPage />} />
+          </Route>
+
+          <Route element={<MerchantRoute />}>
+            <Route path="/newProduct" element={<NewProductPage />} />
+            <Route path="/myProducts" element={<MyProductsPage />} />
+          </Route>
+
+          <Route element={<AdminRoute />}>
+            <Route path="/allUsers" element={<AllUsersPage />} />
+            <Route path="/userView/:user_id" element={<UserViewPage />} />
+          </Route>
         </Routes>
         <FooterComponent />
       </AuthProvider>
     </PrimeReactProvider>
-  )
-}
+  );
+};

@@ -1,7 +1,6 @@
 import type { NavbarStrings } from "../types/navbarTypes";
 import { API_BASE_URL, LOGO, logoNavbar } from "./env";
 
-
 export const navbarStrings: NavbarStrings = {
   logo: {
     src: `${API_BASE_URL}${LOGO}${logoNavbar}`,
@@ -23,6 +22,12 @@ export const navbarStrings: NavbarStrings = {
       label: "Usuarios",
       id: "allUsersLink",
       icon: "pi pi-users",
+    },
+    {
+      page: "/newProduct",
+      label: "Nuevo Producto",
+      id: "newProductLink",
+      icon: "pi pi-sparkles",
     },
     {
       page: "/profile",

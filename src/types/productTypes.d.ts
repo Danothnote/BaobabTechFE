@@ -1,3 +1,5 @@
+import type { CategoriesData } from "./fetchTypes";
+
 export interface ProductData {
   _id: string;
   product_name: string;
@@ -59,4 +61,24 @@ export interface AllProductsStrings {
   searchBar: SearchBar;
   favoriteButton: FavoriteButton;
   filter: SidebarFilter;
+}
+
+export interface CartItem {
+  product_id: string;
+  quantity: number;
+}
+
+export interface CartListItem {
+  quantity: number;
+  product: ProductData;
+}
+
+export interface GetProductData {
+  message: string;
+  data: ProductData[];
+}
+
+export interface GetCategoriesData {
+  message: string;
+  data: CategoriesData[];
 }

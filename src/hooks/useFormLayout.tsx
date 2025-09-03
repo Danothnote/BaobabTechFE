@@ -9,7 +9,9 @@ export const useFormLayout = ({
   handleChange,
   touchedFields,
   threshold = 5,
-  fileUploadRef: fileUploadRef,
+  fileUploadRef,
+  optionalFieldsEnabled,
+  handleOptionalFieldChange,
 }: UseFormLayoutProps): React.ReactNode => {
   const renderInputs = useMemo(() => {
     const renderSingleInput = (input: FormInput) =>
@@ -20,6 +22,8 @@ export const useFormLayout = ({
         handleChange: handleChange,
         isTouched: touchedFields[input.id],
         fileUploadRef: fileUploadRef,
+        optionalFieldsEnabled: optionalFieldsEnabled,
+        handleOptionalFieldChange: handleOptionalFieldChange,
       });
 
     const fileInput = inputs.find((input) => input.type === "file");
@@ -71,12 +75,22 @@ export const useFormLayout = ({
           </div>
         )}
 
-        {fileInput && (
+        {fileInput && fileUploadRef && (
           <div className="col-12">{renderSingleInput(fileInput)}</div>
         )}
       </div>
     );
-  }, [inputs, formData, errors, handleChange, touchedFields, threshold]);
+  }, [
+    inputs,
+    formData,
+    errors,
+    handleChange,
+    touchedFields,
+    threshold,
+    fileUploadRef,
+    optionalFieldsEnabled,
+    handleOptionalFieldChange,
+  ]);
 
   return renderInputs;
 };

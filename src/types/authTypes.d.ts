@@ -5,30 +5,42 @@ export interface AuthUser {
   _id: string;
   firstname: string;
   lastname: string;
-  birth_date: Date | null;
+  birth_date: Date | null | string;
   email: string | null;
   password?: string;
   profile_picture: string;
-  favorite_products: string[];
-  role: "admin" | "user";
-  createdAt: Date | null;
+  role: "admin" | "merchant" | "user";
 }
 
 export interface AuthContextType {
   user: AuthUser | null;
   isAuthenticated: boolean;
+  updateUserFilesTrigger: (arg: { dataToPatch: any }) => Promise<any>;
+  updateUserDataTrigger: (arg: { dataToPatch: any }) => Promise<any>;
+  updateFilesMessage: string | undefined;
+  updateDataMessage: string | undefined;
+  refreshUser: KeyedMutator<AuthResponse>;
+
   login: (
     userData: ClientFormData,
     navigate: NavigateFunction
   ) => Promise<string>;
+
   signup: (
     userData: ClientFormData,
     navigate: NavigateFunction
   ) => Promise<string>;
-  updateUser: (data: {
-    [key: string]: string | string[] | null | undefined;
-  }) => Promise<string>;
+
+  updateFilesUser: (data: {
+    [key: string]: string | string[] | FormData | Date | null | undefined;
+  }) => Promise<string | null | undefined>;
+
+  updateDataUser: (data: {
+    [key: string]: string | string[] | FormData | Date | null | undefined;
+  }) => Promise<string | null | undefined>;
+
   logout: () => Promise<void>;
+
   loading: boolean;
 }
 

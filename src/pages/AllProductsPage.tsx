@@ -8,14 +8,17 @@ import { useNavigate } from "react-router";
 import { useAuth } from "../hooks/useAuth";
 import type { DataTableFilterMeta } from "primereact/datatable";
 import { useEffect, useMemo, useState } from "react";
-import type { ProductData } from "../types/productTypes";
+import type {
+  GetCategoriesData,
+  GetProductData,
+  ProductData,
+} from "../types/productTypes";
 import { allProductsStrings } from "../strings/allProductsStrings";
 import { useGetData } from "../hooks/useGetData";
 import { useUpdateFavorite } from "../hooks/useUpdateFavorite";
 import { mutate } from "swr";
 import { API_BASE_URL } from "../strings/env";
 import { Slider } from "primereact/slider";
-import type { CategoriesData } from "../types/fetchTypes";
 import { PanelMenu } from "primereact/panelmenu";
 import { Divider } from "primereact/divider";
 import { usePostData } from "../hooks/usePostData";
@@ -35,23 +38,25 @@ export const AllProductsPage = () => {
   const [filters, setFilters] = useState<DataTableFilterMeta>({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
   });
-  const { data: products, isLoading } = useGetData<ProductData[]>("products/");
+  const { data: products, isLoading } = useGetData<GetProductData>("products/");
   const {
     trigger: postProductsByCategory,
     data: postedData,
     isLoading: isPosting,
   } = usePostData<ProductData[]>("products/by_filter/");
   const { data: categories, isLoading: isLoadingCategories } =
-    useGetData<CategoriesData[]>("categories/");
-  const { data: favorites } = useGetData<string[]>("favorites/");
+    useGetData<GetCategoriesData>("categories/");
+  const { data: favorites } = useGetData<{ message: string; data: string[] }>(
+    "favorites/"
+  );
   const { addFavorite, removeFavorite } =
     useUpdateFavorite("favorites/update/");
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   const menuItems = useMemo(() => {
-    if (!categories) return [];
-    return categories.map((category) => ({
+    if (!categories?.data) return [];
+    return categories.data.map((category) => ({
       label: category.name,
       items: category.subcategories.map((subCategorie) => ({
         label: subCategorie.name,
@@ -74,9 +79,9 @@ export const AllProductsPage = () => {
   }, [priceRange]);
 
   useEffect(() => {
-    if (products && products.length > 0) {
+    if (products && products.data.length > 0) {
       const highestPrice = Math.max(
-        ...products.map((product) => product.price)
+        ...products.data.map((product) => product.price)
       );
       const roundedMaxPrice = Math.ceil(highestPrice);
       setMaxPrice(roundedMaxPrice);
@@ -85,7 +90,7 @@ export const AllProductsPage = () => {
   }, [products]);
 
   useEffect(() => {
-    const sourceProducts = postedData || products || [];
+    const sourceProducts = postedData || products?.data || [];
     if (sourceProducts) {
       let _filteredProducts = [...sourceProducts];
 
@@ -115,7 +120,7 @@ export const AllProductsPage = () => {
 
   const clearCategoryFilter = () => {
     setIsCategoryFiltered(false);
-    setFilteredProducts(products || []);
+    setFilteredProducts(products?.data || []);
   };
 
   const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -187,7 +192,7 @@ export const AllProductsPage = () => {
   };
 
   const favoriteTemplate = (product: ProductData) => {
-    const isFavorite = favorites!.includes(product._id);
+    const isFavorite = favorites!.data.includes(product._id);
     return (
       <div
         className="h-auto flex justify-content-center align-items-center absolute top-0 right-0 m-3 z-1"

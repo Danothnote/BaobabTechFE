@@ -6,11 +6,9 @@ export const footerStrings: FooterStrings = {
   about: {
     title: "¿Por qué elegirnos?",
     list: [
-      "Renta inmediatamente",
-      "Sin tiempos de espera",
-      "Escoge el que más te guste",
-      "Opciones imprecionantes",
-      "Precios increibles",
+      "Cada equipo es rigurosamente probado y restaurado para asegurar su funcionamiento impecable.",
+      "Obtén el rendimiento que deseas a una fracción del costo de un equipo nuevo.",
+      "Al comprar equipos de segunda mano, contribuyes a reducir los residuos electrónicos y a cuidar el medio ambiente",
     ],
   },
   social: {
@@ -40,7 +38,12 @@ export const footerStrings: FooterStrings = {
   },
   contact: {
     title: "Escríbenos a nuestro WhatsApp",
-    list: [{ number: "+593 998 551 234", iconUrl: `${API_BASE_URL}/static/images/socials/whatsapp.webp` }],
+    list: [
+      {
+        number: "+593 998678181",
+        iconUrl: `${API_BASE_URL}/static/images/socials/whatsapp.webp`,
+      },
+    ],
   },
-  copyright: "BaobabTech. Todos los derechos reservados."
+  copyright: "BaobabTech. Todos los derechos reservados.",
 };

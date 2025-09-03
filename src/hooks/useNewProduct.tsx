@@ -15,13 +15,13 @@ export const useNewProduct = () => {
   ) => {
     setLoading(true);
 
+    console.log(formData)
     try {
       const payload = new FormData();
-
       for (const key in formData) {
         const value = formData[key];
 
-        if (key === "img_upload" && Array.isArray(value)) {
+        if (key === "image_url" && Array.isArray(value)) {
           for (const file of value) {
             payload.append(key, file);
           }
@@ -36,9 +36,9 @@ export const useNewProduct = () => {
           }
         }
       }
-
+      
       const response = await axios.post<AuthResponse>(
-        `${API_BASE_URL}/all_products/new_product`,
+        `${API_BASE_URL}/products/`,
         payload,
         {
           headers: {

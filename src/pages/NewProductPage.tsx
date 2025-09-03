@@ -1,6 +1,6 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { showToast } from "../helpers/showToast";
-import type { ClientFormData } from "../types/formTypes";
+import type { ClientFormData, FormInput } from "../types/formTypes";
 import { Toast } from "primereact/toast";
 import { useNavigate } from "react-router";
 import { validateFormData } from "../helpers/validateFormData";
@@ -11,13 +11,17 @@ import { useFormLayout } from "../hooks/useFormLayout";
 import type { FileUpload } from "primereact/fileupload";
 import { newProductStrings } from "../strings/newProductStrings";
 import { useNewProduct } from "../hooks/useNewProduct";
+import { useGetData } from "../hooks/useGetData";
+import type { CategoriesData, FetchDataGet } from "../types/fetchTypes";
 
 export const NewProductPage = () => {
-  const initialFormState = useMemo(() => {
-    return createInitialFormState(newProductStrings.inputs);
-  }, []);
+  const { data: categoriesData } =
+    useGetData<FetchDataGet<CategoriesData[]>>("categories/");
 
-  const [formData, setFormData] = useState<ClientFormData>(initialFormState);
+  const [inputs, setInputs] = useState<FormInput[]>(newProductStrings.inputs);
+  const [formData, setFormData] = useState<ClientFormData>(
+    createInitialFormState(inputs)
+  );
   const [errors, setErrors] = useState<Record<string, string[]>>({});
   const [touchedFields, setTouchedFields] = useState<Record<string, boolean>>(
     {}
@@ -28,15 +32,47 @@ export const NewProductPage = () => {
   const toast = useRef<Toast>(null);
   const fileUploadRef = useRef<FileUpload>(null);
 
+  const [optionalFieldsEnabled, setOptionalFieldsEnabled] = useState<
+    Record<string, boolean>
+  >(
+    newProductStrings.inputs
+      .filter((input) => input.optional)
+      .reduce((acc, curr) => ({ ...acc, [curr.id]: false }), {})
+  );
+
+  useEffect(() => {
+    if (categoriesData?.data) {
+      const subcategories = categoriesData.data.flatMap((category) =>
+        category.subcategories.map((subcat) => subcat.name)
+      );
+
+      const updatedInputs = newProductStrings.inputs.map((input) => {
+        if (input.id === "category") {
+          return { ...input, options: subcategories };
+        }
+        return input;
+      });
+      setInputs(updatedInputs);
+    }
+  }, [categoriesData]);
+
+  useEffect(() => {
+    setFormData(createInitialFormState(inputs));
+    setErrors({});
+    setTouchedFields({});
+  }, [inputs]);
+
   useEffect(() => {
     const { errors: newErrors, isValid: overallIsValid } = validateFormData(
       formData,
-      newProductStrings.inputs
+      inputs,
+      optionalFieldsEnabled
     );
 
     setErrors(newErrors);
     setIsFormValid(overallIsValid);
-  }, [formData]);
+  }, [formData, inputs, optionalFieldsEnabled]);
+  
 
   const handleChange = (
     id: keyof ClientFormData,
@@ -50,11 +86,19 @@ export const NewProductPage = () => {
     if (id === "air_conditioning") {
       value = value === "Si" ? true : false;
     }
-    
+
     setFormData((prevData) => ({
       ...prevData,
       [id]: value,
     }));
+  };
+
+  const handleOptionalFieldChange = (id: string, isChecked: boolean) => {
+    setOptionalFieldsEnabled((prev) => ({ ...prev, [id]: isChecked }));
+    if (!isChecked) {
+      setFormData((prevData) => ({ ...prevData, [id]: undefined }));
+      setTouchedFields((prevTouched) => ({ ...prevTouched, [id]: false }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -68,7 +112,7 @@ export const NewProductPage = () => {
         newProductStrings.toastSuccess.summary,
         response
       );
-      setFormData(initialFormState);
+      setFormData(createInitialFormState(inputs));
       setTouchedFields({});
       fileUploadRef.current?.clear();
     } catch (error: any) {
@@ -82,19 +126,21 @@ export const NewProductPage = () => {
   };
 
   const handleNavigateBack = () => {
-    setFormData(initialFormState);
+    setFormData(createInitialFormState(inputs));
     setTouchedFields({});
     fileUploadRef.current?.clear();
     navigate(-1);
   };
 
   const formLayout = useFormLayout({
-    inputs: newProductStrings.inputs,
+    inputs: inputs,
     formData: formData,
     errors: errors,
     handleChange: handleChange,
     touchedFields: touchedFields,
     fileUploadRef: fileUploadRef,
+    optionalFieldsEnabled: optionalFieldsEnabled,
+    handleOptionalFieldChange: handleOptionalFieldChange,
   });
 
   return (
@@ -110,7 +156,6 @@ export const NewProductPage = () => {
       >
         <form onSubmit={handleSubmit} className="text-left">
           {formLayout}
-
           <div className="flex flex-column justify-content-center">
             <div className="flex flex-wrap gap-5 mt-4 mb-3 justify-content-center">
               <Button type="submit" loading={loading} disabled={!isFormValid}>

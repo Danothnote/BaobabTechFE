@@ -10,6 +10,7 @@ import { createInitialFormState } from "../helpers/createInitialFormState";
 import { Card } from "primereact/card";
 import { Button } from "primereact/button";
 import { useFormLayout } from "../hooks/useFormLayout";
+import type { FileUpload } from "primereact/fileupload";
 
 export const SignupPage = () => {
   const initialFormState = useMemo(() => {
@@ -29,7 +30,8 @@ export const SignupPage = () => {
   useEffect(() => {
     const { errors: newErrors, isValid: overallIsValid } = validateFormData(
       formData,
-      signupStrings.inputs
+      signupStrings.inputs,
+      {}
     );
 
     setErrors(newErrors);
@@ -79,12 +81,18 @@ export const SignupPage = () => {
     navigate(-1);
   };
 
+  const fileUploadRef = useRef<FileUpload>(null);
+  const handleOptionalFieldChange = (id: string, isChecked: boolean) => {};
+
   const formLayout = useFormLayout({
     inputs: signupStrings.inputs,
     formData: formData,
     errors: errors,
     handleChange: handleChange,
     touchedFields: touchedFields,
+    optionalFieldsEnabled: {},
+    fileUploadRef: fileUploadRef,
+    handleOptionalFieldChange: handleOptionalFieldChange,
   });
 
   return (
