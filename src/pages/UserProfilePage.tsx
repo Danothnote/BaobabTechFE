@@ -13,6 +13,8 @@ import { InputText } from "primereact/inputtext";
 import { Calendar } from "primereact/calendar";
 import { useUpdateData } from "../hooks/useUpdateData";
 import { DialogComponent } from "../components/DialogComponent";
+import { showToast } from "../helpers/showToast";
+import { usePostData } from "../hooks/usePostData";
 
 export const UserProfilePage = () => {
   const [showDeactivateDialog, setShowDeactivateDialog] = useState(false);
@@ -26,6 +28,8 @@ export const UserProfilePage = () => {
   } = useAuth();
   const { trigger: deactivateUserTrigger, isLoading: isDeactivating } =
     useUpdateData("users/deactivate");
+  const { trigger: forgotPasswordTrigger, isLoading: isSendingEmail } =
+    usePostData("auth/forgot-password");
   const [editMode, setEditMode] = useState<{ [key: string]: boolean }>({});
   const [editedUser, setEditedUser] = useState<AuthUser>(
     user || ({} as AuthUser)
@@ -96,6 +100,22 @@ export const UserProfilePage = () => {
       });
     } finally {
       setShowDeactivateDialog(false);
+    }
+  };
+
+  const handleChangePassword = async (email: string) => {
+    try {
+      await forgotPasswordTrigger({
+        email: email,
+      });
+      showToast(
+        toast,
+        "success",
+        "Restablecimiento",
+        "Se ha enviado un correo de restablecimiento"
+      );
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -258,6 +278,8 @@ export const UserProfilePage = () => {
                     label={userProfileStrings.secondaryButton}
                     icon="pi pi-key"
                     severity="warning"
+                    loading={isSendingEmail}
+                    onClick={() => handleChangePassword(user.email!)}
                   />
                   <Button
                     label={userProfileStrings.deactivateButton}

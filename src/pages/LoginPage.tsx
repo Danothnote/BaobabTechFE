@@ -12,12 +12,18 @@ import { validateFormData } from "../helpers/validateFormData";
 import { showToast } from "../helpers/showToast";
 import { useFormLayout } from "../hooks/useFormLayout";
 import type { FileUpload } from "primereact/fileupload";
+import { DialogComponent } from "../components/DialogComponent";
+import { usePostData } from "../hooks/usePostData";
 
 export const LoginPage = () => {
   const initialFormState = useMemo(() => {
-    return createInitialFormState(loginStrings.inputs);
+    return createInitialFormState([
+      ...loginStrings.inputs,
+      ...loginStrings.dialog!.inputs,
+    ]);
   }, []);
 
+  const [showDialog, setShowDialog] = useState<boolean>(false);
   const [formData, setFormData] = useState<ClientFormData>(initialFormState);
   const [errors, setErrors] = useState<Record<string, string[]>>({});
   const [touchedFields, setTouchedFields] = useState<Record<string, boolean>>(
@@ -25,18 +31,31 @@ export const LoginPage = () => {
   );
   const [isFormValid, setIsFormValid] = useState<boolean>(false);
   const { login, loading } = useAuth();
+  const { trigger: forgotPasswordTrigger, isLoading: isSendingEmail } =
+    usePostData("auth/forgot-password");
   const navigate = useNavigate();
   const toast = useRef<Toast>(null);
 
   useEffect(() => {
+    const allInputs = [...loginStrings.inputs, ...loginStrings.dialog!.inputs];
     const { errors: newErrors, isValid: overallIsValid } = validateFormData(
       formData,
-      loginStrings.inputs,
+      allInputs,
       {}
     );
 
+    const loginInputIds = loginStrings.inputs.map((i) => i.id);
+    const loginErrors = Object.keys(newErrors).filter((key) =>
+      loginInputIds.includes(key)
+    );
+    const isLoginValid =
+      loginErrors.length === 0 &&
+      loginInputIds.every((id) => {
+        return !newErrors[id] || newErrors[id].length === 0;
+      });
+
     setErrors(newErrors);
-    setIsFormValid(overallIsValid);
+    setIsFormValid(isLoginValid);
   }, [formData]);
 
   const handleChange = (
@@ -82,10 +101,6 @@ export const LoginPage = () => {
     navigate("/signup");
   };
 
-  const handleNavigateResetPassword = () => {
-    console.log("Reset Password");
-  };
-
   const fileUploadRef = useRef<FileUpload>(null);
   const handleOptionalFieldChange = (id: string, isChecked: boolean) => {};
 
@@ -99,6 +114,34 @@ export const LoginPage = () => {
     fileUploadRef: fileUploadRef,
     handleOptionalFieldChange: handleOptionalFieldChange,
   });
+
+  const dialogFormLayout = useFormLayout({
+    inputs: loginStrings.dialog!.inputs,
+    formData: formData,
+    errors: errors,
+    handleChange: handleChange,
+    touchedFields: touchedFields,
+    optionalFieldsEnabled: {},
+    fileUploadRef: fileUploadRef,
+    handleOptionalFieldChange: handleOptionalFieldChange,
+  });
+
+  const handleForgotPassword = async () => {
+    try {
+      await forgotPasswordTrigger({
+        email: formData.forgotPasswordEmail,
+      });
+      showToast(
+        toast,
+        loginStrings.toastSuccess.severity,
+        "Restablecimiento",
+        "Si la cuenta existe, se ha enviado un correo de restablecimiento"
+      );
+    } catch (error) {
+      console.error(error);
+    }
+    setShowDialog(false);
+  };
 
   return (
     <div
@@ -127,11 +170,31 @@ export const LoginPage = () => {
               type="button"
               label={loginStrings.optional}
               link
-              onClick={handleNavigateResetPassword}
+              onClick={() => setShowDialog(true)}
             />
           </div>
         </form>
       </Card>
+
+      <DialogComponent
+        title={loginStrings.dialog!.title}
+        visible={showDialog}
+        onHide={() => setShowDialog(false)}
+        confirmButtonLabel="Restablecer"
+        confirmButtonAction={handleForgotPassword}
+        confirmButtonLoading={isSendingEmail}
+        cancelButtonLabel="Cancelar"
+        cancelButtonAction={() => setShowDialog(false)}
+        bodyComponent={
+          <div className="text-center">
+            <p className="p-5">
+              Al presionar el botón de restablecer se te enviará un email para
+              reiniciar tu contraseña
+            </p>
+            {dialogFormLayout}
+          </div>
+        }
+      />
     </div>
   );
 };

@@ -1,15 +1,15 @@
-import { API_BASE_URL } from "./env";
+import { API_BASE_URL, WALLPAPER } from "./env";
 
 export const homePageStrings = {
   title: "Bienvenido a la tienda BaobabTech",
   description:
     "¡Bienvenido a nuestro rincón tecnológico! 🚀 Encontrarás equipos de alta calidad que no romperán tu bolsillo. Nos especializamos en la venta de computadores de segunda mano de las mejores marcas, completamente restaurados y garantizados para un rendimiento óptimo.\n\nPero eso no es todo. Si ya tienes una computadora, te ofrecemos una selección de artículos y componentes esenciales para mejorarla. Desde tarjetas gráficas hasta discos SSD, tenemos todo lo que necesitas para potenciar tu experiencia de juego, diseño o trabajo.",
   storeButton: "Ver Productos",
-  logoUrl: `${API_BASE_URL}/static/images/logo/logo_lg.webp`,
-  winterUrl: `${API_BASE_URL}/static/images/wallpapers/invierno.webp`,
-  springUrl: `${API_BASE_URL}/static/images/wallpapers/primavera.webp`,
-  summerUrl: `${API_BASE_URL}/static/images/wallpapers/verano.webp`,
-  fallUrl: `${API_BASE_URL}/static/images/wallpapers/otoño.webp`,
+  landingUrl: `${API_BASE_URL}${WALLPAPER}signup.webp`,
+  winterUrl: `${API_BASE_URL}${WALLPAPER}invierno.webp`,
+  springUrl: `${API_BASE_URL}${WALLPAPER}primavera.webp`,
+  summerUrl: `${API_BASE_URL}${WALLPAPER}verano.webp`,
+  fallUrl: `${API_BASE_URL}${WALLPAPER}otoño.webp`,
   faseOneTitle: "❄️ Fase 1: Invierno - La Decadencia",
   faseOneDescription:
     "Esta fase representa el momento en que un equipo llega a nuestras manos. Ya no está en su máximo esplendor; ha pasado por un ciclo de uso, y sus capacidades pueden estar limitadas. Simboliza el inicio del viaje hacia una segunda vida. Es la etapa de introspección, donde el equipo está a punto de ser transformado. En esta fase, el equipo está en reposo, a la espera de un nuevo propósito.",

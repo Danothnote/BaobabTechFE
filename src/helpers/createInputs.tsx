@@ -91,7 +91,7 @@ export const createInputs = ({
             )}
           </div>
         );
-      case "textarea": // Nuevo caso para el textarea
+      case "textarea":
         return (
           <div key={input.id} className="w-full">
             <FloatLabel className={"block m-auto w-11"}>

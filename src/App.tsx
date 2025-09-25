@@ -2,7 +2,7 @@ import { PrimeReactProvider } from "primereact/api";
 import "/node_modules/primeflex/primeflex.css";
 import "primereact/resources/themes/lara-dark-cyan/theme.css";
 import "primeicons/primeicons.css";
-import { Route, Routes } from "react-router";
+import { Navigate, Route, Routes } from "react-router";
 import { HomePage } from "./pages/HomePage";
 import { LoginPage } from "./pages/LoginPage";
 import { SignupPage } from "./pages/SignupPage";
@@ -23,6 +23,9 @@ import {
   PrivateRoute,
   PublicRoute,
 } from "./router/PrivateRoute";
+import { ResetPasswordPage } from "./pages/ResetPasswordPage";
+import { VerifyEmailPage } from "./pages/VerifyEmailPage";
+import { CategoryCreationPage } from "./pages/CategoryCreationPage";
 
 export const App = () => {
   return (
@@ -33,10 +36,15 @@ export const App = () => {
           <Route path="/" element={<HomePage />} />
           <Route path="/allProducts" element={<AllProductsPage />} />
           <Route path="/products/:product_id" element={<ProductViewPage />} />
+          <Route
+            path="/reset-password/:token"
+            element={<ResetPasswordPage />}
+          />
 
           <Route element={<PublicRoute />}>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
+            <Route path="/verify-email/:token" element={<VerifyEmailPage />} />
           </Route>
 
           <Route element={<PrivateRoute />}>
@@ -50,9 +58,12 @@ export const App = () => {
           </Route>
 
           <Route element={<AdminRoute />}>
+            <Route path="/newCategory" element={<CategoryCreationPage />} />
             <Route path="/allUsers" element={<AllUsersPage />} />
             <Route path="/userView/:user_id" element={<UserViewPage />} />
           </Route>
+
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
         <FooterComponent />
       </AuthProvider>

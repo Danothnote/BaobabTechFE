@@ -35,10 +35,24 @@ export interface FormInput {
   optional?: boolean;
 }
 
+interface ForgotPasswordDialogInputs {
+  id: string;
+  type: "email";
+  label: string;
+  placeholder: string;
+  validation: string;
+}
+
+interface ForgotPasswordDialog {
+  title: string;
+  inputs: ForgotPasswordDialogInputs[];
+}
+
 export interface FormStrings {
   title: string;
   imageUrl: string;
   inputs: FormInput[];
+  dialog?: ForgotPasswordDialog;
   toastSuccess: FormToast;
   toastError: FormToast;
   primaryButton: string;

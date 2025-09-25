@@ -9,6 +9,7 @@ export const DialogComponent = ({
   confirmButtonLabel,
   confirmButtonAction,
   confirmButtonLoading,
+  confirmButtonDisabled,
   cancelButtonLabel,
   cancelButtonAction,
 }: AddToCartDialogProps) => {
@@ -19,6 +20,7 @@ export const DialogComponent = ({
         icon="pi pi-check"
         onClick={confirmButtonAction}
         loading={confirmButtonLoading}
+        disabled={confirmButtonDisabled}
       />
       <Button
         label={cancelButtonLabel}

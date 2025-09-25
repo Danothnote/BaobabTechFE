@@ -1,6 +1,7 @@
 import { homePageStrings } from "../strings/homePageStrings";
 import { Button } from "primereact/button";
 import { useNavigate } from "react-router";
+import { SeasonComponent } from "../components/SeasonComponent";
 
 export const HomePage = () => {
   const navigate = useNavigate();
@@ -13,13 +14,15 @@ export const HomePage = () => {
     <div>
       <div
         className="bg-cover bg-center"
-        style={{ backgroundImage: `url(${homePageStrings.logoUrl})` }}
+        style={{ backgroundImage: `url(${homePageStrings.landingUrl})` }}
       >
         <div
           className="flex flex-column min-h-screen justify-content-center align-items-center p-4"
           style={{ backgroundColor: "rgb(0, 0, 0, 0.4)" }}
         >
-          <h1 className="text-4xl mb-3 text-center text-with-shadow">{homePageStrings.title}</h1>
+          <h1 className="text-4xl mb-3 text-center text-with-shadow">
+            {homePageStrings.title}
+          </h1>
           <p
             className="text-xl text-left line-height-3 p-5 text-with-shadow"
             style={{ whiteSpace: "pre-line", maxWidth: "600px" }}
@@ -36,73 +39,26 @@ export const HomePage = () => {
       </div>
 
       <div className="flex flex-wrap">
-        <div
-          className="bg-cover bg-center w-12 lg:w-6"
-          style={{ backgroundImage: `url(${homePageStrings.winterUrl})` }}
-        >
-          <div className="flex flex-column min-h-screen justify-content-center align-items-center p-4 gradient-overlay">
-            <h1 className="text-4xl mb-3 text-center text-with-shadow">
-              {homePageStrings.faseOneTitle}
-            </h1>
-            <p
-              className="text-xl text-left line-height-3 p-5 text-with-shadow"
-              style={{ whiteSpace: "pre-line", maxWidth: "600px" }}
-            >
-              {homePageStrings.faseOneDescription}
-            </p>
-          </div>
-        </div>
-
-        <div
-          className="bg-cover bg-center w-12 lg:w-6"
-          style={{ backgroundImage: `url(${homePageStrings.springUrl})` }}
-        >
-          <div className="flex flex-column min-h-screen justify-content-center align-items-center p-4 gradient-overlay">
-            <h1 className="text-4xl mb-3 text-center text-with-shadow">
-              {homePageStrings.faseTwoTitle}
-            </h1>
-            <p
-              className="text-xl text-left line-height-3 p-5 text-with-shadow"
-              style={{ whiteSpace: "pre-line", maxWidth: "600px" }}
-            >
-              {homePageStrings.faseTwoDescription}
-            </p>
-          </div>
-        </div>
-
-        <div
-          className="bg-cover bg-center w-12 lg:w-6"
-          style={{ backgroundImage: `url(${homePageStrings.summerUrl})` }}
-        >
-          <div className="flex flex-column min-h-screen justify-content-center align-items-center p-4 gradient-overlay">
-            <h1 className="text-4xl mb-3 text-center text-with-shadow">
-              {homePageStrings.faseThreeTitle}
-            </h1>
-            <p
-              className="text-xl text-left line-height-3 p-5 text-with-shadow"
-              style={{ whiteSpace: "pre-line", maxWidth: "600px" }}
-            >
-              {homePageStrings.faseThreeDescription}
-            </p>
-          </div>
-        </div>
-
-        <div
-          className="bg-cover bg-center w-12 lg:w-6"
-          style={{ backgroundImage: `url(${homePageStrings.fallUrl})` }}
-        >
-          <div className="flex flex-column min-h-screen justify-content-center align-items-center p-4 gradient-overlay">
-            <h1 className="text-4xl mb-3 text-center text-with-shadow">
-              {homePageStrings.faseFourTitle}
-            </h1>
-            <p
-              className="text-xl text-left line-height-3 p-5 text-with-shadow"
-              style={{ whiteSpace: "pre-line", maxWidth: "600px" }}
-            >
-              {homePageStrings.faseFourDescription}
-            </p>
-          </div>
-        </div>
+        <SeasonComponent
+          background={`url(${homePageStrings.winterUrl})`}
+          title={homePageStrings.faseOneTitle}
+          description={homePageStrings.faseOneDescription}
+        />
+        <SeasonComponent
+          background={`url(${homePageStrings.springUrl})`}
+          title={homePageStrings.faseTwoTitle}
+          description={homePageStrings.faseTwoDescription}
+        />
+        <SeasonComponent
+          background={`url(${homePageStrings.winterUrl})`}
+          title={homePageStrings.faseThreeTitle}
+          description={homePageStrings.faseThreeDescription}
+        />
+        <SeasonComponent
+          background={`url(${homePageStrings.winterUrl})`}
+          title={homePageStrings.faseFourTitle}
+          description={homePageStrings.faseFourDescription}
+        />
       </div>
     </div>
   );

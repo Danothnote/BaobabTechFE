@@ -3,6 +3,7 @@ export const WALLPAPER = "/static/images/wallpapers/";
 export const LOGO = "/static/images/logo/";
 export const logoNavbar = "logo_one_line.webp";
 export const background = {
+  landing: "landing.webp",
   login: "login.webp",
   signup: "signup.webp",
   profile: "profile.webp",

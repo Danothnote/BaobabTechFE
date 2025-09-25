@@ -6,6 +6,7 @@ interface AddToCartDialogProps {
   confirmButtonLabel: string;
   confirmButtonAction: () => void;
   confirmButtonLoading: boolean;
+  confirmButtonDisabled?: boolean;
   cancelButtonLabel: string;
   cancelButtonAction: () => void;
 }

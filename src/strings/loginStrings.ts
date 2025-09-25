@@ -20,6 +20,18 @@ export const loginStrings: FormStrings = {
       validation: "Este campo es obligatorio",
     },
   ],
+  dialog: {
+    title: "Reinicio de Contraseña",
+    inputs: [
+      {
+        id: "forgotPasswordEmail",
+        type: "email",
+        label: "Ingresa tu email",
+        placeholder: "Ej: usuario@correo.com",
+        validation: "Por favor, ingresa un email válido.",
+      },
+    ],
+  },
   toastSuccess: {
     severity: "success",
     summary: "¡Inicio de Sesión Exitoso!",

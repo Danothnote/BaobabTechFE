@@ -15,6 +15,20 @@ body {
   text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.9);
 }
 
+.hidden-overlay {
+  background-color: rgb(0, 0, 0, 0.6);
+  transition: opacity 0.4s ease 0s, visibility 0.4s ease 0s;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.visible-overlay {
+  background-color: rgb(0, 0, 0, 0.6);
+  transition: opacity 0.4s ease 0s, visibility 0.4s ease 0s;
+  opacity: 1;
+  visibility: visible;
+}
+
 .p-fileupload-buttonbar .p-button.p-component,
 .p-fileupload-buttonbar .p-button.p-component.p-disabled {
   display: none;

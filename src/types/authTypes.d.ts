@@ -9,6 +9,8 @@ export interface AuthUser {
   email: string | null;
   password?: string;
   profile_picture: string;
+  status: "active" | "inactive";
+  is_verified: boolean;
   role: "admin" | "merchant" | "user";
 }
 
@@ -56,4 +58,9 @@ export interface AuthResponse {
 export interface UpdateResponse {
   message: string;
   user?: AuthUser;
+}
+
+export interface GetUsersData {
+  message: string;
+  data: AuthUser[];
 }
