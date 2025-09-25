@@ -1,4 +1,4 @@
-export const API_BASE_URL = "back.danosv.com";
+export const API_BASE_URL = "http://back.danosv.com";
 export const WALLPAPER = "/static/images/wallpapers/";
 export const LOGO = "/static/images/logo/";
 export const logoNavbar = "logo_one_line.webp";
