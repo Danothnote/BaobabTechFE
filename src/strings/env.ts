@@ -1,4 +1,4 @@
-export const API_BASE_URL = import.meta.env.VITE_API_URL;
+export const API_BASE_URL = "http://192.168.100.116:8000";
 export const WALLPAPER = "/static/images/wallpapers/";
 export const LOGO = "/static/images/logo/";
 export const logoNavbar = "logo_one_line.webp";
