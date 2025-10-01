@@ -30,6 +30,12 @@ export const navbarStrings: NavbarStrings = {
       icon: "pi pi-sparkles",
     },
     {
+      page: "/newCategory",
+      label: "Categorías",
+      id: "newCategoryLink",
+      icon: "pi pi-clone",
+    },
+    {
       page: "/profile",
       label: "Mi Perfil",
       id: "profileLink",

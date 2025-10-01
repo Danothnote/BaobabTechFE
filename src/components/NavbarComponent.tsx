@@ -42,12 +42,13 @@ export const NavbarComponent = () => {
   const fillProfileMenuItems = () => {
     let profileMenuItems: MenuItem[] = [];
     navbarStrings.profileMenu.map((item: MenuLink) => {
-      if (item.id === navbarStrings.profileMenu[3].id) {
+      if (item.id === navbarStrings.profileMenu[4].id) {
         profileMenuItems.push({ separator: true });
       }
 
       if (
         (user?.role === "admin" || item.id !== "allUsersLink") &&
+        (user?.role === "admin" || item.id !== "newCategoryLink") &&
         (user?.role === "merchant" || item.id !== "myProductsLink") &&
         (user?.role === "merchant" || item.id !== "newProductLink")
       ) {

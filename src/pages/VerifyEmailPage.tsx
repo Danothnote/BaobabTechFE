@@ -8,7 +8,9 @@ import { usePostData } from "../hooks/usePostData";
 export const VerifyEmailPage = () => {
   const { token } = useParams();
   const [status, setStatus] = useState<string>("Verificando tu cuenta...");
-  const { trigger: verifyEmailTrigger } = usePostData("auth/verify-email");
+  const { trigger: verifyEmailTrigger } = usePostData(
+    `auth/verify-email/${token}`
+  );
 
   const navigate = useNavigate();
 
@@ -20,9 +22,7 @@ export const VerifyEmailPage = () => {
 
     const verifyAccount = async () => {
       try {
-        await verifyEmailTrigger({
-          token: token,
-        });
+        await verifyEmailTrigger();
         setStatus(
           "Verificación exitosa, ya puede iniciar sesión con normalidad"
         );

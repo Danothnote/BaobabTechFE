@@ -58,3 +58,37 @@ body {
   font-weight: bold;
   font-size: larger;
 }
+
+.product-card {
+  position: relative;
+  background-color: #1e1e1e;
+}
+
+.product-card::before,
+.product-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: red;
+  transition: 0.5s;
+}
+
+.product-card:hover::before {
+  inset: -1px;
+}
+
+.product-card:hover::after {
+  inset: -3px;
+  filter: blur(10px);
+}
+
+.product-card::before,
+.product-card::after {
+  background: linear-gradient(45deg, #00ccff, #1e1e1e, #1e1e1e, #d400d4);
+}
+
+.product-card-content {
+  position: relative;
+  background-color: #1e1e1e;
+  z-index: 1;
+}

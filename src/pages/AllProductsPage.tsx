@@ -218,7 +218,7 @@ export const AllProductsPage = () => {
     if (!items || items.length === 0) return null;
 
     return (
-      <div className="grid grid-nogutter gap-5 mx-4 mb-5">
+      <div className="grid grid-nogutter gap-5 mx-4 mb-5 mt-3">
         {items.map((product) => {
           return itemDataTemplate(product);
         })}
@@ -233,12 +233,12 @@ export const AllProductsPage = () => {
 
     return (
       <div
-        className="border-round-lg p-2 cursor-pointer w-25rem"
+        className="border-round-lg cursor-pointer w-25rem product-card"
         key={product._id}
         onClick={() => onRowSelect(product._id)}
         style={{ backgroundColor: "#1e1e1e" }}
       >
-        <div className="p-4 border-round flex flex-column h-full">
+        <div className="p-4 border-round flex flex-column h-full product-card-content">
           <div className="flex flex-column gap-3 py-2">
             <div className="flex justify-content-center align-items-center pb-5">
               <div className="w-min flex gap-5 relative">
