@@ -38,11 +38,7 @@ export const LoginPage = () => {
 
   useEffect(() => {
     const allInputs = [...loginStrings.inputs, ...loginStrings.dialog!.inputs];
-    const { errors: newErrors, isValid: overallIsValid } = validateFormData(
-      formData,
-      allInputs,
-      {}
-    );
+    const { errors: newErrors } = validateFormData(formData, allInputs, {});
 
     const loginInputIds = loginStrings.inputs.map((i) => i.id);
     const loginErrors = Object.keys(newErrors).filter((key) =>
@@ -102,7 +98,10 @@ export const LoginPage = () => {
   };
 
   const fileUploadRef = useRef<FileUpload>(null);
-  const handleOptionalFieldChange = (id: string, isChecked: boolean) => {};
+  const handleOptionalFieldChange = (id: string, isChecked: boolean) => {
+    id;
+    isChecked;
+  };
 
   const formLayout = useFormLayout({
     inputs: loginStrings.inputs,

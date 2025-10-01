@@ -123,7 +123,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const updateDataUser = async (updateData: {
-    [key: string]: string | string[] | FormData | Date | null | undefined;
+    [key: string]:
+      | string
+      | string[]
+      | boolean
+      | FormData
+      | Date
+      | null
+      | undefined;
   }) => {
     await updateUserDataTrigger({ dataToPatch: updateData });
     return updateFilesMessage;

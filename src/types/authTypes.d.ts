@@ -38,7 +38,7 @@ export interface AuthContextType {
   }) => Promise<string | null | undefined>;
 
   updateDataUser: (data: {
-    [key: string]: string | string[] | FormData | Date | null | undefined;
+    [key: string]: string | string[] | FormData | Date | boolean | null | undefined;
   }) => Promise<string | null | undefined>;
 
   logout: () => Promise<void>;

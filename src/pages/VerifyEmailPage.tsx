@@ -8,8 +8,7 @@ import { usePostData } from "../hooks/usePostData";
 export const VerifyEmailPage = () => {
   const { token } = useParams();
   const [status, setStatus] = useState<string>("Verificando tu cuenta...");
-  const { trigger: verifyEmailTrigger, isLoading: isverifyingEmail } =
-    usePostData("auth/verify-email");
+  const { trigger: verifyEmailTrigger } = usePostData("auth/verify-email");
 
   const navigate = useNavigate();
 

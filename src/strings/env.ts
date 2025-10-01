@@ -1,4 +1,4 @@
-export const API_BASE_URL = "https://back.danosv.com";
+export const API_BASE_URL = import.meta.env.VITE_API_URL;
 export const WALLPAPER = "/static/images/wallpapers/";
 export const LOGO = "/static/images/logo/";
 export const logoNavbar = "logo_one_line.webp";

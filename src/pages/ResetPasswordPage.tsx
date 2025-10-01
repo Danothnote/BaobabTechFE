@@ -55,7 +55,10 @@ export const ResetPasswordPage = () => {
   };
 
   const fileUploadRef = useRef<FileUpload>(null);
-  const handleOptionalFieldChange = (id: string, isChecked: boolean) => {};
+  const handleOptionalFieldChange = (id: string, isChecked: boolean) => {
+    id;
+    isChecked;
+  };
 
   const formLayout = useFormLayout({
     inputs: resetPasswordStrings.inputs,
