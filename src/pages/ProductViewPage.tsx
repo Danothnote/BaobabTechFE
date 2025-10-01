@@ -34,7 +34,7 @@ export const ProductViewPage = () => {
     "favorites/"
   );
   const { addFavorite, removeFavorite } =
-    useUpdateFavorite("favorites/update/");
+    useUpdateFavorite("favorites/update");
   const [dialogVisible, setDialogVisible] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const { trigger, isLoading: isAddingToCart } = usePostData("cart/add");

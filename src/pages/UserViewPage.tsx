@@ -10,7 +10,7 @@ import type { AuthUser } from "../types/authTypes";
 import { useEffect, useRef, useState } from "react";
 import { usePostData } from "../hooks/usePostData";
 import { useUpdateData } from "../hooks/useUpdateData";
-import { useNavigate, useParams } from "react-router";
+import { useParams } from "react-router";
 import { Image } from "primereact/image";
 import { Avatar } from "primereact/avatar";
 import { InputText } from "primereact/inputtext";
@@ -40,7 +40,6 @@ export const UserViewPage = () => {
   const [editedUser, setEditedUser] = useState<AuthUser>(
     user?.data || ({} as AuthUser)
   );
-  const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const toast = useRef<Toast>(null);
 
@@ -134,7 +133,6 @@ export const UserViewPage = () => {
         data_id: `/${user.data._id}`,
         dataToPatch: {},
       });
-      navigate("/");
       toast.current?.show({
         severity: "success",
         summary: "Éxito",

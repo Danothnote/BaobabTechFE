@@ -9,7 +9,7 @@ export const VerifyEmailPage = () => {
   const { token } = useParams();
   const [status, setStatus] = useState<string>("Verificando tu cuenta...");
   const { trigger: verifyEmailTrigger } = usePostData(
-    `auth/verify-email/${token}`
+    `auth/verify-email/${token}/`
   );
 
   const navigate = useNavigate();

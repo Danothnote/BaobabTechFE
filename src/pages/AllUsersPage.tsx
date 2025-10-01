@@ -21,7 +21,7 @@ export const AllUsersPage = () => {
   const navigate = useNavigate();
 
   const onRowSelect = (user_id: string) => {
-    navigate(`/userView/${user_id}`);
+    navigate(`/userView/${user_id}/`);
   };
 
   const filteredUsers = useMemo(() => {

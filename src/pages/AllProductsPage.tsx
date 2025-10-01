@@ -43,14 +43,14 @@ export const AllProductsPage = () => {
     trigger: postProductsByCategory,
     data: postedData,
     isLoading: isPosting,
-  } = usePostData<ProductData[]>("products/by_filter/");
+  } = usePostData<ProductData[]>("products/by_filter");
   const { data: categories, isLoading: isLoadingCategories } =
     useGetData<GetCategoriesData>("categories/");
   const { data: favorites } = useGetData<{ message: string; data: string[] }>(
     "favorites/"
   );
   const { addFavorite, removeFavorite } =
-    useUpdateFavorite("favorites/update/");
+    useUpdateFavorite("favorites/update");
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 

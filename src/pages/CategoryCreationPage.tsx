@@ -50,7 +50,7 @@ export const CategoryCreationPage = () => {
     data: categoriesResponse,
     isLoading: isLoadingCategories,
     mutate: refreshCategories,
-  } = useGetData<CategoriesResponse>("categories");
+  } = useGetData<CategoriesResponse>("categories/");
 
   const apiCategories = categoriesResponse?.data || [];
 
@@ -78,7 +78,7 @@ export const CategoryCreationPage = () => {
   );
 
   const { trigger: createCategoryTrigger, isLoading: isCreating } =
-    usePostData("categories/add/");
+    usePostData("categories/add");
   const { trigger: updateCategoryTrigger, isLoading: isUpdating } =
     useUpdateData("categories/update/");
   const { trigger: deleteCategoryTrigger, isLoading: isDeleting } =
